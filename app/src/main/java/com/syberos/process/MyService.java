@@ -1,5 +1,6 @@
 package com.syberos.process;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.PixelFormat;
@@ -32,6 +33,11 @@ public class MyService extends Service implements View.OnTouchListener {
     @Override
     public void onCreate() {
         super.onCreate();
+        Notification.Builder builder = new Notification.Builder(this);
+        builder.setSmallIcon(android.R.drawable.ic_btn_speak_now);
+        builder.setContentText("text");
+        builder.setContentTitle("title");
+        startForeground(1, builder.getNotification());
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         windowView = LayoutInflater.from(this).inflate(R.layout.window, null);
         button = windowView.findViewById(R.id.button);
@@ -39,7 +45,7 @@ public class MyService extends Service implements View.OnTouchListener {
         layoutParams = new WindowManager.LayoutParams(-2,
                                                       -2,
                                                       WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
-                                                      WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                                                      WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_FULLSCREEN,
                                                       PixelFormat.RGBA_8888);
         layoutParams.gravity = Gravity.LEFT | Gravity.TOP;
         windowManager.addView(windowView, layoutParams);
@@ -52,8 +58,8 @@ public class MyService extends Service implements View.OnTouchListener {
 
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                layoutParams.x = (int) e2.getRawX();
-                layoutParams.y = (int) e2.getRawY();
+                layoutParams.x = (int) (e2.getRawX() - windowView.getWidth() / 2);
+                layoutParams.y = (int) (e2.getRawY() - windowView.getHeight() / 2);
                 windowManager.updateViewLayout(windowView, layoutParams);
                 return true;
             }
